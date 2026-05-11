@@ -82,6 +82,11 @@ export type PossibleSelections =
     }
   | { type: SelectionType.MissingRepository; repository: Repository }
 
+export enum ChangesListViewMode {
+  Flat = 'flat',
+  Tree = 'tree',
+}
+
 /** All of the shared app state. */
 export interface IAppState {
   readonly accounts: ReadonlyArray<Account>
@@ -398,6 +403,9 @@ export interface IAppState {
 
   /** Whether the changes filter is shown */
   readonly showChangesFilter: boolean
+
+  /** How changed files are displayed in the Changes tab */
+  readonly changesListViewMode: ChangesListViewMode
 
   /**
    * Per-feature Copilot model selections. An absent key means the default

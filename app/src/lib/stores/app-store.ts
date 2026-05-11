@@ -152,6 +152,7 @@ import {
   IConstrainedValue,
   ICompareState,
   CommitOptions,
+  ChangesListViewMode,
 } from '../app-state'
 import type { ModelInfo } from '@github/copilot-sdk'
 import {
@@ -506,6 +507,9 @@ const commitMessageGenerationButtonClickedKey =
 
 export const showChangesFilterKey = 'show-changes-filter'
 
+export const changesListViewModeKey = 'changes-list-view-mode'
+export const changesListViewModeDefault = ChangesListViewMode.Flat
+
 const selectedCopilotModelsKey = 'selected-copilot-models'
 export const showChangesFilterDefault = true
 
@@ -667,6 +671,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
   private commitMessageGenerationButtonClicked: boolean = false
 
   private showChangesFilter: boolean = false
+
+  private changesListViewMode: ChangesListViewMode = changesListViewModeDefault
 
   private selectedCopilotModels: CopilotModelSelections = {}
   private copilotModels: ReadonlyArray<ModelInfo> | null = null
@@ -1182,6 +1188,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       commitMessageGenerationButtonClicked:
         this.commitMessageGenerationButtonClicked,
       showChangesFilter: this.showChangesFilter,
+      changesListViewMode: this.changesListViewMode,
       selectedCopilotModels: this.selectedCopilotModels,
       copilotModels: this.copilotModels,
       copilotAvailable: this.copilotStore.isAvailable,
@@ -2447,6 +2454,10 @@ export class AppStore extends TypedBaseStore<IAppState> {
       showChangesFilterKey,
       showChangesFilterDefault
     )
+
+    this.changesListViewMode =
+      getEnum(changesListViewModeKey, ChangesListViewMode) ??
+      changesListViewModeDefault
 
     this.selectedCopilotModels = this.loadCopilotModelSelections()
     this.byokProviders = loadBYOKProviders()
@@ -9300,6 +9311,16 @@ export class AppStore extends TypedBaseStore<IAppState> {
     this.showChangesFilter = !this.showChangesFilter
     setBoolean(showChangesFilterKey, this.showChangesFilter)
     this.updateMenuLabelsForSelectedRepository()
+    this.emitUpdate()
+  }
+
+  public _setChangesListViewMode(mode: ChangesListViewMode) {
+    if (this.changesListViewMode === mode) {
+      return
+    }
+
+    this.changesListViewMode = mode
+    localStorage.setItem(changesListViewModeKey, mode)
     this.emitUpdate()
   }
 }
